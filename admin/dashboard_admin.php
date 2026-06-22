@@ -1,28 +1,10 @@
 <?php
+$page_title = 'Dashboard Admin';
+$meta_description = 'Dashboard admin untuk monitoring booking, pendapatan, user, lapangan, dan jadwal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('admin', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';
 require_once __DIR__ . '/../config/config.php';
-
-if (!function_exists('render_status_badge')) {
-  function render_status_badge(string $status): string
-  {
-    $normalized = strtolower(trim($status));
-
-    $classMap = [
-      'pending' => 'status-badge status-pending',
-      'dibayar' => 'status-badge status-success',
-      'sukses' => 'status-badge status-success',
-      'selesai' => 'status-badge status-info',
-      'batal' => 'status-badge status-failed',
-      'gagal' => 'status-badge status-failed',
-    ];
-
-    $class = $classMap[$normalized] ?? 'status-badge status-info';
-
-    return '<span class="' . $class . '">' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</span>';
-  }
-}
 
 $totalUsers = (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn();
 $totalLapangan = (int) $pdo->query('SELECT COUNT(*) FROM lapangan')->fetchColumn();
@@ -92,7 +74,7 @@ require_once __DIR__ . '/../includes/header.php';
       <p class="muted">Pembayaran pending</p>
     </div>
     <div class="card">
-      <strong>Live</strong>
+      <strong><span class="pulse-dot"></span>Live</strong>
       <p class="muted">Ringkasan data real-time</p>
     </div>
   </div>

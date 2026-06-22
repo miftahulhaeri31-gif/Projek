@@ -34,10 +34,10 @@ if (!function_exists('flash_set')) {
 }
 
 if (!function_exists('flash_get')) {
-    function flash_get(string $key): ?string
+    function flash_get(string $key): string
     {
         if (!isset($_SESSION['flash'][$key])) {
-            return null;
+            return '';
         }
 
         $message = (string) $_SESSION['flash'][$key];

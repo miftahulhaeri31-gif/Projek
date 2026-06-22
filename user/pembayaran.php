@@ -1,34 +1,10 @@
 <?php
+$page_title = 'Pembayaran';
+$meta_description = 'Konfirmasi dan pantau status pembayaran booking lapangan futsal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('user', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';
 require_once __DIR__ . '/../config/config.php';
-
-$message = flash_get('success');
-$error = flash_get('error');
-$selectedBookingId = (int) ($_GET['booking_id'] ?? ($_POST['booking_id'] ?? 0));
-
-if (!function_exists('render_status_badge')) {
-  function render_status_badge(string $status): string
-  {
-    $normalized = strtolower(trim($status));
-
-    $classMap = [
-      'pending' => 'status-badge status-pending',
-      'sukses' => 'status-badge status-success',
-      'success' => 'status-badge status-success',
-      'dibayar' => 'status-badge status-success',
-      'gagal' => 'status-badge status-failed',
-      'failed' => 'status-badge status-failed',
-      'batal' => 'status-badge status-failed',
-      'selesai' => 'status-badge status-info',
-    ];
-
-    $class = $classMap[$normalized] ?? 'status-badge status-info';
-
-    return '<span class="' . $class . '">' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</span>';
-  }
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';

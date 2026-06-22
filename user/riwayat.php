@@ -1,30 +1,10 @@
 <?php
+$page_title = 'Riwayat Booking';
+$meta_description = 'Pantau semua riwayat booking dan status pembayaran lapangan futsal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('user', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';
 require_once __DIR__ . '/../config/config.php';
-
-if (!function_exists('render_status_badge')) {
-  function render_status_badge(string $status): string
-  {
-    $normalized = strtolower(trim($status));
-
-    $classMap = [
-      'pending' => 'status-badge status-pending',
-      'sukses' => 'status-badge status-success',
-      'success' => 'status-badge status-success',
-      'dibayar' => 'status-badge status-success',
-      'gagal' => 'status-badge status-failed',
-      'failed' => 'status-badge status-failed',
-      'batal' => 'status-badge status-failed',
-      'selesai' => 'status-badge status-info',
-    ];
-
-    $class = $classMap[$normalized] ?? 'status-badge status-info';
-
-    return '<span class="' . $class . '">' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</span>';
-  }
-}
 
 $stmt = $pdo->prepare('SELECT b.id, l.nama_lapangan, j.tanggal, j.jam_mulai, j.jam_selesai, b.total_harga, b.status, b.tanggal_booking, p.status AS payment_status
     FROM booking b
@@ -73,7 +53,7 @@ require_once __DIR__ . '/../includes/header.php';
           <tbody>
             <?php if (empty($bookingList)): ?>
               <tr>
-                <td colspan="7" class="muted">Belum ada booking.</td>
+                <td colspan="8" class="muted">Belum ada booking.</td>
               </tr>
             <?php else: ?>
               <?php foreach ($bookingList as $index => $booking): ?>

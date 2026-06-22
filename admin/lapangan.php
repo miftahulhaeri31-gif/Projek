@@ -1,4 +1,6 @@
 <?php
+$page_title = 'Kelola Lapangan';
+$meta_description = 'Tambah, ubah, dan hapus data lapangan futsal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('admin', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';
@@ -167,7 +169,7 @@ require_once __DIR__ . '/../includes/header.php';
                   <td><?php echo $index + 1; ?></td>
                   <td><?php echo htmlspecialchars($lapangan['nama_lapangan'], ENT_QUOTES, 'UTF-8'); ?></td>
                   <td>Rp <?php echo number_format((int) $lapangan['harga_per_jam'], 0, ',', '.'); ?></td>
-                  <td><?php echo htmlspecialchars($lapangan['status'], ENT_QUOTES, 'UTF-8'); ?></td>
+                  <td><?php echo render_lapangan_status($lapangan['status']); ?></td>
                   <td>
                     <div class="nav">
                       <a class="pill secondary" href="lapangan.php?edit=<?php echo (int) $lapangan['id']; ?>">Edit</a>

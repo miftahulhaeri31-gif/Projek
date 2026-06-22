@@ -1,28 +1,10 @@
 <?php
+$page_title = 'Monitoring Booking';
+$meta_description = 'Monitoring semua booking oleh admin lapangan futsal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('admin', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';
 require_once __DIR__ . '/../config/config.php';
-
-if (!function_exists('render_status_badge')) {
-  function render_status_badge(string $status): string
-  {
-    $normalized = strtolower(trim($status));
-
-    $classMap = [
-      'pending' => 'status-badge status-pending',
-      'dibayar' => 'status-badge status-success',
-      'sukses' => 'status-badge status-success',
-      'selesai' => 'status-badge status-info',
-      'batal' => 'status-badge status-failed',
-      'gagal' => 'status-badge status-failed',
-    ];
-
-    $class = $classMap[$normalized] ?? 'status-badge status-info';
-
-    return '<span class="' . $class . '">' . htmlspecialchars($status, ENT_QUOTES, 'UTF-8') . '</span>';
-  }
-}
 
 $statusFilter = trim($_GET['status'] ?? '');
 $tanggalFilter = trim($_GET['tanggal'] ?? '');
@@ -75,7 +57,7 @@ require_once __DIR__ . '/../includes/header.php';
 
     <section class="card">
       <form class="grid two" method="get">
-        <select name="status" style="min-height: 48px; padding: 0 14px; border: 1px solid #e5e5e5; border-radius: 14px; font: inherit;">
+        <select name="status" class="form-select">
           <option value="">Semua status</option>
           <?php foreach (['pending', 'dibayar', 'selesai', 'batal'] as $status): ?>
             <option value="<?php echo $status; ?>" <?php echo $statusFilter === $status ? 'selected' : ''; ?>><?php echo $status; ?></option>

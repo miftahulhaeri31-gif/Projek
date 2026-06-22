@@ -1,4 +1,6 @@
 <?php
+$page_title = 'Kelola User';
+$meta_description = 'Tambah, ubah, dan hapus akun user dan admin sistem booking futsal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('admin', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';

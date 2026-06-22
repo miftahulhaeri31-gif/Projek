@@ -1,4 +1,6 @@
 <?php
+$page_title = 'Kelola Jadwal';
+$meta_description = 'Tambah, ubah, dan hapus slot jadwal lapangan futsal.';
 require_once __DIR__ . '/../includes/session.php';
 require_role('admin', '../auth/login.php');
 require_once __DIR__ . '/../config/koneksi.php';
