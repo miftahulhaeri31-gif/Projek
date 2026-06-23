@@ -14,7 +14,7 @@
   <section class="hero landing-hero">
     <div class="container hero-grid">
       <section class="card landing-panel fade-in-up">
-        <div class="landing-eyebrow kicker">Booking Lapangan Futsal</div>
+        <div class="landing-eyebrow kicker">Futsal Booking Wanasaba</div>
         <h1 class="landing-title">Reservasi cepat, jadwal rapi, pembayaran terpantau.</h1>
         <p class="landing-copy">
           Sistem booking lapangan futsal berbasis PHP Native dan MySQL dengan alur admin dan user yang sudah siap dipakai.

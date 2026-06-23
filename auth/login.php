@@ -13,8 +13,11 @@ $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = trim($_POST['email'] ?? '');
   $password = $_POST['password'] ?? '';
+  $csrf = $_POST['csrf_token'] ?? '';
 
-  if ($email === '' || $password === '') {
+  if (!verify_csrf($csrf)) {
+    $error = 'Validasi keamanan gagal (CSRF token tidak valid). Silakan muat ulang halaman.';
+  } elseif ($email === '' || $password === '') {
     $error = 'Email dan password wajib diisi.';
   } else {
     $stmt = $pdo->prepare('SELECT id, name, email, password, role FROM users WHERE email = :email LIMIT 1');
@@ -45,7 +48,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="auth-grid">
       <section class="auth-copy">
         <div>
-          <div class="kicker">Sistem Booking Futsal</div>
+          <div class="kicker">Futsal Booking Wanasaba</div>
           <h1>Masuk cepat, booking lebih rapi.</h1>
           <p class="muted">Kelola lapangan, jadwal, booking, dan pembayaran dari satu sistem yang sederhana dan terstruktur.</p>
         </div>
@@ -93,6 +96,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
 
         <form class="form" method="post">
+          <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
           <input type="email" name="email" placeholder="Email" autocomplete="email" required>
           <input type="password" name="password" placeholder="Password" autocomplete="current-password" required>
           <button class="button" type="submit">Login</button>

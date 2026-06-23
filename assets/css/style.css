@@ -27,15 +27,12 @@
 
   /* Radius */
   --radius-pill: 9999px;
-  --radius-card: 18px;
+  --radius-card: 0px;
   --radius-input: 14px;
-
-  /* Shadows */
-  --shadow-card: 0 8px 32px rgba(17,17,17,0.07);
-  --shadow-card-hover: 0 16px 48px rgba(17,17,17,0.12);
 
   /* Font */
   --font: 'Inter', Arial, Helvetica, sans-serif;
+  --font-display: 'Bebas Neue', Arial, Helvetica, sans-serif;
 
   /* Transitions */
   --tr: 160ms ease;
@@ -67,8 +64,9 @@ a { color: inherit; text-decoration: none; }
 h1, h2, h3, p { margin-top: 0; }
 
 h1 {
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 6vw, 5rem);
-  font-weight: 700;
+  font-weight: 400;
   line-height: 0.95;
   text-transform: uppercase;
   letter-spacing: -0.01em;
@@ -108,14 +106,12 @@ p { line-height: 1.6; color: var(--charcoal); }
   background: var(--canvas);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
   padding: 24px;
-  transition: transform var(--tr), box-shadow var(--tr), border-color var(--tr);
+  transition: border-color var(--tr);
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-card-hover);
+  border-color: var(--ink);
 }
 
 /* ── Alert cards ─────────────────────────────────────────── */
@@ -199,8 +195,7 @@ p { line-height: 1.6; color: var(--charcoal); }
 
 .pill:hover,
 .button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(17,17,17,0.14);
+  opacity: 0.9;
 }
 
 .pill:active,

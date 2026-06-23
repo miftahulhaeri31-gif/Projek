@@ -1,5 +1,5 @@
 {
-"project_name": "Sistem Booking Lapangan Futsal",
+"project_name": "Futsal Booking Wanasaba",
 "technology": {
 "backend": "PHP Native",
 "database": "MySQL",

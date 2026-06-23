@@ -34,11 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             try {
                 if ($action === 'pay') {
+                    $metode = $_POST['metode'] ?? 'gateway';
                     $transactionId = $booking['transaction_id'] ?: 'TRX-' . date('YmdHis') . '-' . $bookingId;
-                    $updatePayment = $pdo->prepare('UPDATE pembayaran SET status = :status, transaction_id = :transaction_id WHERE booking_id = :booking_id');
+                    $updatePayment = $pdo->prepare('UPDATE pembayaran SET status = :status, transaction_id = :transaction_id, metode = :metode WHERE booking_id = :booking_id');
                     $updatePayment->execute([
                         'status' => 'sukses',
                         'transaction_id' => $transactionId,
+                        'metode' => $metode,
                         'booking_id' => $bookingId,
                     ]);
 
@@ -86,6 +88,10 @@ $bookingListStmt = $pdo->prepare('SELECT b.id, b.status AS booking_status, b.tot
     ORDER BY b.id DESC');
 $bookingListStmt->execute(['user_id' => (int) $_SESSION['user_id']]);
 $bookingList = $bookingListStmt->fetchAll();
+
+$selectedBookingId = (int) ($_GET['booking_id'] ?? 0);
+$message = flash_get('success');
+$error = flash_get('error');
 
 $currentBooking = null;
 if ($selectedBookingId > 0) {
@@ -183,11 +189,84 @@ require_once __DIR__ . '/../includes/header.php';
             <p class="muted">Status booking: <?php echo render_status_badge($currentBooking['booking_status']); ?></p>
           </div>
 
-          <form class="form" method="post">
-            <input type="hidden" name="booking_id" value="<?php echo (int) $currentBooking['id']; ?>">
-            <button class="button" type="submit" name="action" value="pay" <?php echo $currentBooking['payment_status'] === 'sukses' ? 'disabled' : ''; ?>>Bayar Sekarang</button>
-            <button class="button secondary" type="submit" name="action" value="fail" <?php echo $currentBooking['payment_status'] === 'sukses' ? 'disabled' : ''; ?>>Tandai Gagal</button>
-          </form>
+          <?php if ($currentBooking['payment_status'] === 'sukses'): ?>
+            <p class="muted" style="margin-top: 20px; font-weight: 500; color: #007d48;">✅ Pembayaran berhasil. Silakan cek menu Riwayat untuk cetak struk.</p>
+          <?php else: ?>
+            <div id="payment-selection">
+              <h3 style="margin-top: 20px;">Pilih Metode Pembayaran</h3>
+              <select id="metode-select" class="form-input" style="min-height: 48px; padding: 0 14px; border: 1px solid #e5e5e5; border-radius: 14px; font: inherit; width: 100%; margin-bottom: 20px;" onchange="showPaymentMethod(this.value)">
+                <option value="">-- Pilih Metode --</option>
+                <option value="QRIS">QRIS</option>
+                <option value="Transfer Bank">Transfer Bank</option>
+                <option value="Tunai">Tunai di Kasir</option>
+              </select>
+            </div>
+
+            <!-- Formulir untuk dikirim -->
+            <form class="form" method="post" id="form-payment" style="display: none;">
+              <input type="hidden" name="booking_id" value="<?php echo (int) $currentBooking['id']; ?>">
+              <input type="hidden" name="metode" id="input-metode" value="">
+              
+              <!-- Container instruksi dinamis -->
+              <div id="instruksi-container" style="margin-bottom: 20px; background: #fafafa; padding: 20px; border: 1px solid #e5e5e5; border-radius: 14px;">
+              </div>
+
+              <button class="button" type="submit" name="action" value="pay" style="width: 100%;">Konfirmasi Pembayaran</button>
+            </form>
+
+            <script>
+            function showPaymentMethod(method) {
+                const form = document.getElementById('form-payment');
+                const inputMetode = document.getElementById('input-metode');
+                const instruksiContainer = document.getElementById('instruksi-container');
+                const trxId = "<?php echo htmlspecialchars((string) ($currentBooking['transaction_id'] ?: 'TRX-' . date('YmdHis') . '-' . $currentBooking['id']), ENT_QUOTES, 'UTF-8'); ?>";
+
+                if (method === '') {
+                    form.style.display = 'none';
+                    return;
+                }
+
+                form.style.display = 'block';
+                inputMetode.value = method;
+
+                let html = '';
+                if (method === 'QRIS') {
+                    html = `
+                        <div style="text-align: center;">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${trxId}" alt="QRIS" style="margin-bottom: 16px; border-radius: 8px;">
+                            <p style="font-weight: 700; font-size: 1.2rem; margin: 0;">Scan QRIS ini</p>
+                            <p class="muted" style="margin-top: 4px;">Setelah melakukan scan dan bayar di aplikasi E-Wallet/M-Banking Anda, tekan tombol konfirmasi di bawah.</p>
+                        </div>
+                    `;
+                } else if (method === 'Transfer Bank') {
+                    html = `
+                        <div>
+                            <p style="font-weight: 700; margin-bottom: 8px;">Transfer ke Rekening Berikut:</p>
+                            <div style="padding: 12px; border: 1px solid #e5e5e5; border-radius: 8px; margin-bottom: 8px; background: #fff;">
+                                <strong>BCA</strong>: 1234567890<br>
+                                a.n. Futsal Arena
+                            </div>
+                            <div style="padding: 12px; border: 1px solid #e5e5e5; border-radius: 8px; background: #fff;">
+                                <strong>Mandiri</strong>: 0987654321<br>
+                                a.n. Futsal Arena
+                            </div>
+                            <p class="muted" style="margin-top: 12px;">Pastikan nominal transfer sesuai. Setelah transfer berhasil, tekan tombol konfirmasi di bawah.</p>
+                        </div>
+                    `;
+                } else if (method === 'Tunai') {
+                    html = `
+                        <div style="text-align: center;">
+                            <p style="font-weight: 700; font-size: 1.2rem; margin: 0;">Bayar Tunai di Kasir</p>
+                            <p class="muted" style="margin-top: 4px;">Silakan tunjukkan Nomor Transaksi <strong>${trxId}</strong> ke resepsionis untuk melakukan pembayaran tunai.</p>
+                            <p class="muted" style="font-size: 0.85rem; margin-top: 12px;">*(Sebagai simulasi, tekan tombol konfirmasi di bawah agar sistem menganggap kasir telah menerima uang Anda)*</p>
+                        </div>
+                    `;
+                }
+
+                instruksiContainer.innerHTML = html;
+            }
+            </script>
+          <?php endif; ?>
         <?php else: ?>
           <p class="muted">Belum ada booking yang tersedia.</p>
         <?php endif; ?>

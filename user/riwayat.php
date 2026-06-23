@@ -65,8 +65,11 @@ require_once __DIR__ . '/../includes/header.php';
                   <td>Rp <?php echo number_format((int) $booking['total_harga'], 0, ',', '.'); ?></td>
                   <td><?php echo render_status_badge($booking['payment_status']); ?></td>
                   <td><?php echo render_status_badge($booking['status']); ?></td>
-                  <td>
-                    <a class="pill secondary" href="pembayaran.php?booking_id=<?php echo (int) $booking['id']; ?>">Bayar</a>
+                  <td style="display: flex; gap: 8px;">
+                    <a class="pill secondary" href="pembayaran.php?booking_id=<?php echo (int) $booking['id']; ?>">Detail</a>
+                    <?php if (in_array($booking['status'], ['dibayar', 'selesai'])): ?>
+                      <a class="pill" href="cetak_struk.php?id=<?php echo (int) $booking['id']; ?>" target="_blank">Cetak</a>
+                    <?php endif; ?>
                   </td>
                 </tr>
               <?php endforeach; ?>
